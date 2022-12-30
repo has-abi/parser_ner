@@ -10,7 +10,7 @@ vars:
   val_size: 0.2
 
 
-directories: ["assets", "scripts", "config", "corpus"]
+directories: ["assets", "scripts", "config", "corpus", "training"]
 
 commands:
   - name: preprocess
@@ -49,7 +49,7 @@ commands:
       - "assets/v${vars.data_version}/preprocessed/val.json"
 
   - name: convert
-    help: "Convert data to spacy format"
+    help: "Convert data to spaCy format"
     script:
       - "python scripts/convert.py"
     deps:
@@ -58,6 +58,17 @@ commands:
     outputs:
       - "corpus/train.spacy"
       - "corpus/val.spacy"
+
+  - name: train
+    help: "Train spaCy pipline"
+    script:
+      - "python -m spacy train ./config/${vars.config}.cfg -o ./training/${vars.config}"
+    deps:
+      - "corpus/train.spacy"
+      - "corpus/val.spacy"
+      - "./config/${vars.config}.cfg"
+    outputs:
+      - "training/${vars.config}/model-best"
 
   - name: clean-preprocessed
     help: "Delete the preprocessed files"
