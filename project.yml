@@ -48,6 +48,17 @@ commands:
       - "assets/v${vars.data_version}/preprocessed/train.json"
       - "assets/v${vars.data_version}/preprocessed/val.json"
 
+  - name: convert
+    help: "Convert data to spacy format"
+    script:
+      - "python scripts/convert.py"
+    deps:
+      - "assets/v${vars.data_version}/preprocessed/train.json"
+      - "assets/v${vars.data_version}/preprocessed/val.json"
+    outputs:
+      - "corpus/train.spacy"
+      - "corpus/val.spacy"
+
   - name: clean-preprocessed
     help: "Delete the preprocessed files"
     script:
