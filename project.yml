@@ -1,0 +1,55 @@
+title: "Entities extraction from resume sections (NER/SpanCat)."
+description: "This project uses spaCy (NER) / (Span Categorizer) to extract resume entities"
+
+vars:
+  name: "parser_ner"
+  version: "0.1.0"
+  lang: "fr"
+  config: "default"
+  data_version: 1
+  val_size: 0.2
+
+
+directories: ["assets", "scripts", "config", "corpus"]
+
+commands:
+  - name: preprocess
+    help: "Preprocess different sections data and merge it in two training and validation files"
+    script:
+      - "python scripts/preprocess.py --version=${vars.data_version} --val-size=${vars.val_size}"
+    deps:
+      - "assets/v${vars.data_version}/raw/contact_ner_data_v${vars.data_version}.csv"
+      - "assets/v${vars.data_version}/raw/experiences_ner_data_v${vars.data_version}.csv"
+      - "assets/v${vars.data_version}/raw/education_ner_data_v${vars.data_version}.csv"
+      - "assets/v${vars.data_version}/raw/skills_ner_data_v${vars.data_version}.csv"
+      - "assets/v${vars.data_version}/raw/certification_ner_data_v${vars.data_version}.csv"
+      - "assets/v${vars.data_version}/raw/soft_skills_ner_data_v${vars.data_version}.csv"
+    outputs:
+      - "assets/v${vars.data_version}/preprocessed/train.json"
+      - "assets/v${vars.data_version}/preprocessed/val.json"
+
+  - name: show-stats-raw
+    help: "Show different stats about raw data"
+    script:
+      - "python scripts/stats.py --version=${vars.data_version}"
+    deps:
+      - "assets/v${vars.data_version}/raw/contact_ner_data_v${vars.data_version}.csv"
+      - "assets/v${vars.data_version}/raw/experiences_ner_data_v${vars.data_version}.csv"
+      - "assets/v${vars.data_version}/raw/education_ner_data_v${vars.data_version}.csv"
+      - "assets/v${vars.data_version}/raw/skills_ner_data_v${vars.data_version}.csv"
+      - "assets/v${vars.data_version}/raw/certification_ner_data_v${vars.data_version}.csv"
+      - "assets/v${vars.data_version}/raw/soft_skills_ner_data_v${vars.data_version}.csv"
+
+  - name: show-stats-training
+    help: "Show different stats about training data"
+    script:
+      - "python scripts/stats.py --version=${vars.data_version} --data-type=training"
+    deps:
+      - "assets/v${vars.data_version}/preprocessed/train.json"
+      - "assets/v${vars.data_version}/preprocessed/val.json"
+
+  - name: clean-preprocessed
+    help: "Delete the preprocessed files"
+    script:
+      - "rm -rf assets/v${vars.data_version}/preprocessed/*"
+  
