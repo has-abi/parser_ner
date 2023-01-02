@@ -1,7 +1,7 @@
 import json
 import warnings
 from pathlib import Path
-from typing import Any, List
+from typing import Any, List, Union
 
 import spacy
 import typer
@@ -18,19 +18,24 @@ def read_json(file_path: Path):
             yield (record[0], record[1])
 
 
-def convert_record(nlp: Any, text: str, annotations: List[Any], spans_key: str) -> Doc:
+def convert_record(
+    nlp: Any, text: str, annotations: List[Any], spans_key: str, prob_type: str
+) -> Union[Doc, None]:
     doc = nlp.make_doc(text)
     spans = []
     for annot in annotations:
         span = doc.char_span(annot[0], annot[1], label=annot[2])
-        if span is None:
+        if span is None or span.text.strip() != span.text:
             msg = f"""Skipping entity [{annot[0]}, {annot[1]}, {annot[2]}] in
             the following text because the character span {annot[0]} does not align with token 
             boundaries:\n\n{repr(text)}\n"""
             warnings.warn(msg)
-        else:
-            spans.append(span)
-    doc.spans[spans_key] = spans
+            return None
+        spans.append(span)
+    if prob_type == "spancat":
+        doc.spans[spans_key] = spans
+    else:
+        doc.ents = spans
     return doc
 
 
@@ -40,16 +45,23 @@ def main(
     lang: str = "fr",
     spans_key: str = "sc",
     version: int = 1,
+    prob_type: str = "spancat",
+    convert_type="none",
 ) -> None:
     nlp = spacy.blank(lang)
     assets_dir = assets_dir / f"v{version}" / "preprocessed"
     for json_file in assets_dir.iterdir():
         if json_file.parts[-1].endswith(".json"):
             docs = [
-                convert_record(nlp, text, annotations, spans_key)
+                convert_record(nlp, text, annotations, spans_key, prob_type)
                 for text, annotations in read_json(json_file)
             ]
-            out_file = corpus_dir / json_file.with_suffix(".spacy").parts[-1]
+            docs = [doc for doc in docs if doc]
+            if convert_type == "lite":
+                docs = docs[: int(len(docs) * 0.3)]
+            out_file = (
+                corpus_dir / prob_type / json_file.with_suffix(".spacy").parts[-1]
+            )
             out_data = DocBin(docs=docs).to_bytes()
             with out_file.open("wb") as data_file:
                 data_file.write(out_data)

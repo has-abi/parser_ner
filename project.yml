@@ -5,12 +5,14 @@ vars:
   name: "parser_ner"
   version: "0.1.0"
   lang: "fr"
+  prob_type: "spancat"
   config: "default"
   data_version: 1
   val_size: 0.2
+  convert_type: "none"
 
 
-directories: ["assets", "scripts", "config", "corpus", "training"]
+directories: ["assets", "scripts", "config", "corpus/spancat", "corpus/ner", "training", "metrics/spancat", "metrics/ner"]
 
 commands:
   - name: preprocess
@@ -51,27 +53,45 @@ commands:
   - name: convert
     help: "Convert data to spaCy format"
     script:
-      - "python scripts/convert.py"
+      - "python scripts/convert.py --prob-type=${vars.prob_type} --convert-type=${vars.convert_type}"
     deps:
       - "assets/v${vars.data_version}/preprocessed/train.json"
       - "assets/v${vars.data_version}/preprocessed/val.json"
-    outputs:
-      - "corpus/train.spacy"
-      - "corpus/val.spacy"
+
+  - name: debug
+    help: "debug training data"
+    script:
+      - "python -m spacy debug data ./config/${vars.prob_type}/${vars.config}.cfg"
 
   - name: train
     help: "Train spaCy pipline"
     script:
-      - "python -m spacy train ./config/${vars.config}.cfg -o ./training/${vars.config}"
+      - "python -m spacy train ./config/${vars.prob_type}/${vars.config}.cfg -o ./training/${vars.prob_type}/${vars.config}"
     deps:
-      - "corpus/train.spacy"
-      - "corpus/val.spacy"
-      - "./config/${vars.config}.cfg"
+      - "corpus/${vars.prob_type}/train.spacy"
+      - "corpus/${vars.prob_type}/val.spacy"
+      - "./config/${vars.prob_type}/${vars.config}.cfg"
     outputs:
-      - "training/${vars.config}/model-best"
+      - "training/${vars.prob_type}/${vars.config}/model-best"
+
+  - name: evaluate
+    help: "Evaluate the trained model and export metrics"
+    script:
+      - "python -m spacy evaluate training/${vars.prob_type}/${vars.config}/model-best corpus/${vars.prob_type}/val.spacy --output metrics/${vars.prob_type}/metrics-${vars.config}.json"
+    deps:
+      - "training/${vars.prob_type}/${vars.config}/model-best"
+      - "corpus/${vars.prob_type}/val.spacy"
+    outputs:
+      - "metrics/${vars.prob_type}/metrics-${vars.config}.json"
 
   - name: clean-preprocessed
     help: "Delete the preprocessed files"
     script:
       - "rm -rf assets/v${vars.data_version}/preprocessed/*"
+  
+  - name: clean
+    help: "Clean corpus and training data files"
+    script:
+      - "rm -rf corpus/*"
+      - "rm -rf training/*"
   
