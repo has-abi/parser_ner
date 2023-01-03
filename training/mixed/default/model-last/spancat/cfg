@@ -1,0 +1,14 @@
+{
+  "labels":[
+    "TITLE",
+    "Birth/Age",
+    "DATE",
+    "DIPLOMA",
+    "INSTITUT",
+    "LOC",
+    "POSITION"
+  ],
+  "spans_key":"sc",
+  "threshold":0.5,
+  "max_positive":null
+}

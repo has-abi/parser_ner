@@ -9,6 +9,7 @@ from spacy.tokens import Doc, DocBin
 
 ASSETS_DIR: Path = Path(__file__).parent.parent / "assets"
 CORPUS_DIR: Path = Path(__file__).parent.parent / "corpus"
+NER_ENTITIES = ["SKILL", "PERSON", "ADRESS"]
 
 
 def read_json(file_path: Path):
@@ -18,6 +19,12 @@ def read_json(file_path: Path):
             yield (record[0], record[1])
 
 
+def preprocess_annotations(spans):
+    ner_spans = [span for span in spans if span.label_ in NER_ENTITIES]
+    spancat_spans = [span for span in spans if span not in ner_spans]
+    return (ner_spans, spancat_spans)
+
+
 def convert_record(
     nlp: Any, text: str, annotations: List[Any], spans_key: str, prob_type: str
 ) -> Union[Doc, None]:
@@ -25,14 +32,16 @@ def convert_record(
     spans = []
     for annot in annotations:
         span = doc.char_span(annot[0], annot[1], label=annot[2])
-        if span is None or span.text.strip() != span.text:
+        if span is None or span.text.strip() != span.text or span.label_ in ["ORG"]:
             msg = f"""Skipping entity [{annot[0]}, {annot[1]}, {annot[2]}] in
             the following text because the character span {annot[0]} does not align with token 
             boundaries:\n\n{repr(text)}\n"""
             warnings.warn(msg)
             return None
         spans.append(span)
-    if prob_type == "spancat":
+    if prob_type == "mixed":
+        doc.ents, doc.spans[spans_key] = preprocess_annotations(spans)
+    elif prob_type == "spancat":
         doc.spans[spans_key] = spans
     else:
         doc.ents = spans

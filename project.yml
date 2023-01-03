@@ -12,7 +12,7 @@ vars:
   convert_type: "none"
 
 
-directories: ["assets", "scripts", "config", "corpus/spancat", "corpus/ner", "training", "metrics/spancat", "metrics/ner"]
+directories: ["assets", "scripts", "config", "corpus/spancat", "corpus/ner", "corpus/mixed", "training", "metrics/spancat", "metrics/ner", "metrics/mixed"]
 
 commands:
   - name: preprocess
