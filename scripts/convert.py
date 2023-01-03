@@ -32,7 +32,7 @@ def convert_record(
     spans = []
     for annot in annotations:
         span = doc.char_span(annot[0], annot[1], label=annot[2])
-        if span is None or span.text.strip() != span.text or span.label_ in ["ORG"]:
+        if span is None or span.text.strip() != span.text:
             msg = f"""Skipping entity [{annot[0]}, {annot[1]}, {annot[2]}] in
             the following text because the character span {annot[0]} does not align with token 
             boundaries:\n\n{repr(text)}\n"""
