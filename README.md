@@ -41,5 +41,5 @@ inputs have changed.
 
 <!-- SPACY PROJECT: AUTO-GENERATED DOCS END (do not remove) -->
 
-### Train data summary
+### ⏭ Train data summary
 ![Alt text](training_data_stats.PNG "Training data summary...")
