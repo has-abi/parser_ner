@@ -1,25 +1,47 @@
+__doc__ = """
+This module converts assets directory Json training and validation data into 
+spacy format stored in corpus directory.
+"""
 import json
 import warnings
 from pathlib import Path
-from typing import Any, List, Union
+from typing import Any, Iterator, List, Tuple, Union
 
 import spacy
 import typer
-from spacy.tokens import Doc, DocBin
+from spacy.tokens import Doc, DocBin, Span
 
 ASSETS_DIR: Path = Path(__file__).parent.parent / "assets"
 CORPUS_DIR: Path = Path(__file__).parent.parent / "corpus"
 NER_ENTITIES = ["SKILL", "PERSON", "ADRESS"]
 
 
-def read_json(file_path: Path):
+def read_json(file_path: Path) -> Iterator[Tuple[Any, Any]]:
+    """Read a Json file as an iterator of text and annotations tuple.
+
+    Args:
+        file_path (Path): Json file path.
+
+    Yields:
+        Iterator[Tuple[Any, Any]]: Generator of file data
+            Tuple of text & annotations.
+    """
     with file_path.open(encoding="utf-8") as json_file:
         json_data = json.load(json_file)
         for record in json_data:
             yield (record[0], record[1])
 
 
-def preprocess_annotations(spans):
+def preprocess_annotations(spans: List[Span]) -> Tuple[List[Span], List[Span]]:
+    """Preprocess text Spans and split them to ner spans and spancat spans
+    based on `NER_ENTITIES` list.
+
+    Args:
+        spans (List[Span]): List of text spans.
+
+    Returns:
+        Tuple[List[Span], List[Span]]: Tuple of the preprocessed spans.
+    """
     ner_spans = [span for span in spans if span.label_ in NER_ENTITIES]
     spancat_spans = [span for span in spans if span not in ner_spans]
     return (ner_spans, spancat_spans)
@@ -28,6 +50,18 @@ def preprocess_annotations(spans):
 def convert_record(
     nlp: Any, text: str, annotations: List[Any], spans_key: str, prob_type: str
 ) -> Union[Doc, None]:
+    """Convert a data recored to spacy format.
+
+    Args:
+        nlp (Any): NLP pipline.
+        text (str): Record text.
+        annotations (List[Any]): Record annotations.
+        spans_key (str): The key of spans used in case the problem type is spancat.
+        prob_type (str): The problem type to convert the record to.
+
+    Returns:
+         Union[Doc, None]: Spacy doc.
+    """
     doc = nlp.make_doc(text)
     spans = []
     for annot in annotations:
@@ -55,8 +89,20 @@ def main(
     spans_key: str = "sc",
     version: int = 1,
     prob_type: str = "spancat",
-    convert_type="none",
+    convert_type: str = "none",
 ) -> None:
+    """_summary_
+
+    Args:
+        assets_dir (Path, optional): Assets data directory path. Defaults to ASSETS_DIR.
+        corpus_dir (Path, optional): Corpus data directory path. Defaults to CORPUS_DIR.
+        lang (str, optional): Pipline language. Defaults to "fr".
+        spans_key (str, optional): Spacy spans key for spancat problem. Defaults to "sc".
+        version (int, optional): Data version. Defaults to 1.
+        prob_type (str, optional): Problem type (ner, spancat, mixed). Defaults to "spancat".
+        convert_type (str, optional): Used to specify if we are going to use the lite version
+            of data or use all data when the value is none or different of `lite`. Defaults to "none".
+    """
     nlp = spacy.blank(lang)
     assets_dir = assets_dir / f"v{version}" / "preprocessed"
     for json_file in assets_dir.iterdir():

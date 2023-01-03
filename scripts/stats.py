@@ -1,6 +1,11 @@
+__doc__ = """
+This module is used to plot different statistiques about raw
+and training data in terminal using plotext package.
+"""
 import logging
 from collections import Counter
 from pathlib import Path
+from typing import Any, List, Tuple
 
 import plotext as plt
 import typer
@@ -15,7 +20,13 @@ logger.setLevel(logging.INFO)
 ASSETS_DIR: Path = Path(__file__).parent.parent / "assets"
 
 
-def plot_entities(file_name, data):
+def plot_entities(file_name: str, data: List[Tuple[Any, Any]]) -> None:
+    """Plot the summary of entities founed in `data`.
+
+    Args:
+        file_name (str): File data.
+        data (List[Tuple[Any, Any]]): Data entities to plot.
+    """
     annotations = [label for _, annotations in data for _, _, label in annotations]
     annot_counter = Counter(annotations)
     entities = list(annot_counter.keys())
@@ -29,7 +40,36 @@ def plot_entities(file_name, data):
     plt.show()
 
 
-def plot_preprocessed_stats(train_data, val_data):
+def get_data_entities_summary(
+    train_entities: List[str], val_entities: List[str]
+) -> Tuple[List[str], List[int], List[int]]:
+    """Get the summary of training and validation data entities.
+
+    Args:
+        train_entities (List[str]): Train data entities.
+        val_entities (List[str]): Validation data entities.
+
+    Returns:
+        Tuple[List[str], List[int], List[int]]: All entities and their count
+            in the train and validation entities.
+    """
+    train_counter = Counter(train_entities)
+    val_counter = Counter(val_entities)
+    entities = list(train_counter.keys())
+    train_entities_count = list(train_counter.values())
+    val_entities_count = [val_counter[entity] for entity in entities]
+    return entities, train_entities_count, val_entities_count
+
+
+def plot_preprocessed_stats(
+    train_data: List[Tuple[Any, Any]], val_data: List[Tuple[Any, Any]]
+) -> None:
+    """Plot the training and validation data entities stats.
+
+    Args:
+        train_data (List[Tuple[Any, Any]]): Training data.
+        val_data (List[Tuple[Any, Any]]): Validation data.
+    """
     train_entities = [
         annot[2] for _, annotations in train_data for annot in annotations
     ]
@@ -55,16 +95,14 @@ def plot_preprocessed_stats(train_data, val_data):
     plt.show()
 
 
-def get_data_entities_summary(train_entities, val_entities):
-    train_counter = Counter(train_entities)
-    val_counter = Counter(val_entities)
-    entities = list(train_counter.keys())
-    train_entities_count = list(train_counter.values())
-    val_entities_count = [val_counter[entity] for entity in entities]
-    return entities, train_entities_count, val_entities_count
+def show_stats(version: int = 1, data_type: str = "raw"):
+    """Show raw data or train/validation data based on
+    `data_type` and `version`.
 
-
-def stats(version: int = 1, data_type="raw"):
+    Args:
+        version (int, optional): Data version. Defaults to 1.
+        data_type (str, optional): Data type to show stats for. Defaults to "raw".
+    """
     if data_type == "raw":
         raw_path = ASSETS_DIR / f"v{version}" / "raw"
         raw_data = {}
@@ -89,4 +127,4 @@ def stats(version: int = 1, data_type="raw"):
 
 
 if __name__ == "__main__":
-    typer.run(stats)
+    typer.run(show_stats)

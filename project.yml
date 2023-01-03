@@ -12,7 +12,27 @@ vars:
   convert_type: "none"
 
 
-directories: ["assets", "scripts", "config", "corpus/spancat", "corpus/ner", "corpus/mixed", "training", "metrics/spancat", "metrics/ner", "metrics/mixed"]
+directories: ["assets", 
+              "scripts", 
+              "config", 
+              "corpus/spancat", 
+              "corpus/ner", 
+              "corpus/mixed", 
+              "training", 
+              "metrics/spancat", 
+              "metrics/ner", 
+              "metrics/mixed",
+              ]
+
+
+workflows:
+  all:
+    - preprocess
+    - show-stats-training
+    - convert
+    - train
+    - evaluate
+  
 
 commands:
   - name: preprocess
