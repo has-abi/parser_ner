@@ -91,7 +91,7 @@ def main(
     prob_type: str = "spancat",
     convert_type: str = "none",
 ) -> None:
-    """_summary_
+    """Convert data to spacy format.
 
     Args:
         assets_dir (Path, optional): Assets data directory path. Defaults to ASSETS_DIR.
@@ -101,7 +101,8 @@ def main(
         version (int, optional): Data version. Defaults to 1.
         prob_type (str, optional): Problem type (ner, spancat, mixed). Defaults to "spancat".
         convert_type (str, optional): Used to specify if we are going to use the lite version
-            of data or use all data when the value is none or different of `lite`. Defaults to "none".
+            of data or use all data when the value is none or different of `lite`.
+            Defaults to "none".
     """
     nlp = spacy.blank(lang)
     assets_dir = assets_dir / f"v{version}" / "preprocessed"
