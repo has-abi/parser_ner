@@ -1,13 +1,45 @@
-## EXP 1:
+# 📋 EXPERIMENTS
+Summary of the experiments for training a **Named Entity Recognition** model to detect resume entites using multiple architectures **NER**, **SpanCat**, **NER/Transformer(Distil-Bert)**, **SpanCat/Transformer(Distil-Bert)**, **SpanCat/Transformer(JobBert)** using SpaCy.
+
+The detection a resume section entities is based on the section context meaning that the entities to detect in the education section are not the same as the experiences section.
+
+### ⏯ Detail of the resume entities with their section of detection:
+
+#### 📌 Contact details section:
+
+**PERSON**: The full name of the resume owner (ex. Ahmed Ali).
+**TITLE**: The title of the resume owner (ex. Web Developer).
+**ADDRESS**: Personal address (ex. Hay Elmohammedi 102 Casablanca).
+**Bith/Age**: Date of birth (ex. 20 ans, 12/05/1980).
+
+#### 📌 Education/Certification section:
+
+**DIPLOMA**: Education qualification (ex. Master of data science).
+**INSTITUTE**: Education institute (ex. Cadi ayyad University).
+**DATE**: Education start and end dates (ex. 2001 - 2002).
+**LOC**: Location (ex. Marrakech, Maroc).
+
+#### 📌 Experiences section:
+
+**POSITION**: An experience position/role (ex. DevOps Engineer).
+**ORG**: Organization (ex. ALTEN).
+**DATE**: Experience start and end dates (Avril 2009 - Septembre 2012).
+**LOC**: Location (ex. Casablanca).
+
+### 📌 Skills section
+**SKILL**: Skill unit (ex. Python).
+
+
+## 📋 EXP 1:
 Train and evalute NER and SPAN CAT architectures on the same subset of data
-### Results:
-##### Summary:
+### 📊 Results:
+##### 📝 Summary:
 | P | R | F | ARCH |
 |:-----|:--------:|------:| ------:|
 | 0.72 | 0.64 | 0.68 | NER |
 | 0.88 | 0.65 | 0.75 | SPAN CAT |
 
-##### Entities Details:
+##### 📝 Entities Details:
 
 **PERSON**
 
@@ -86,17 +118,17 @@ Train and evalute NER and SPAN CAT architectures on the same subset of data
 | 0.92 | 0.73 | 0.81 | NER |
 | 0.0 | 0.0 | 0.0 | SPAN CAT |
 
-## EXP 2:
+## 📋 EXP 2:
 Train and evalute SPAN CAT architecture with a **distilbert** and **jobbert** on the same subset of data
-### Results:
-##### Summary:
+### 📊 Results:
+##### 📝 Summary:
 
 | P | R | F | ARCH |
 |:-----|:--------:|------:| ------:|
 | 0.89 | 0.64 | 0.74 | DISTILL-BERT |
 | 0.91 | 0.61 | 0.74 | JOBBERT |
 
-##### Entities Details:
+##### 📝 Entities Details:
 
 **PERSON**
 
@@ -176,13 +208,13 @@ Train and evalute SPAN CAT architecture with a **distilbert** and **jobbert** on
 | 0.91 | 0.84 | 0.88 | JOBBERT |
 
 
-## Conclusion
+## 📋 Conclusion
 
-#### Spancat vs NER
+### 📊 Spancat vs NER
 **Spancat** shows slitly good results in term of **precision** that is much higher than the precision of **NER**
 But has a low **recal**.
 
-### Distill-Bert vs JobBert
+### 📊 Distill-Bert vs JobBert
 Training with **JobBert** transformer that is finetuned on a job descriptions dataset which make this transformer
 more suitable for the job and indeed show good results for the entities **SKILL**, **POSITION**, **ORG**, but **Distill-Bert**
 preforms better on all the entities and also is a distil version of bert with a size near half of **JobBert**.
