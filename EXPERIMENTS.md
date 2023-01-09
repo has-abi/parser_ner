@@ -174,3 +174,15 @@ Train and evalute SPAN CAT architecture with a **distilbert** and **jobbert** on
 |:-----|:--------:|------:|------:|
 | 0.83 | 0.84 | 0.83 | DISTILL-BERT |
 | 0.91 | 0.84 | 0.88 | JOBBERT |
+
+
+## Conclusion
+
+#### Spancat vs NER
+**Spancat** shows slitly good results in term of **precision** that is much higher than the precision of **NER**
+But has a low **recal**.
+
+### Distill-Bert vs JobBert
+Training with **JobBert** transformer that is finetuned on a job descriptions dataset which make this transformer
+more suitable for the job and indeed show good results for the entities **SKILL**, **POSITION**, **ORG**, but **Distill-Bert**
+preforms better on all the entities and also is a distil version of bert with a size near half of **JobBert**.
