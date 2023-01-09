@@ -9,11 +9,10 @@ from typing import Any, Iterator, List, Tuple, Union
 
 import spacy
 import typer
-from spacy.tokens import Doc, DocBin, Span
+from spacy.tokens import Doc, DocBin
 
 ASSETS_DIR: Path = Path(__file__).parent.parent / "assets"
 CORPUS_DIR: Path = Path(__file__).parent.parent / "corpus"
-NER_ENTITIES = ["SKILL", "PERSON", "ADRESS"]
 
 
 def read_json(file_path: Path) -> Iterator[Tuple[Any, Any]]:
@@ -30,21 +29,6 @@ def read_json(file_path: Path) -> Iterator[Tuple[Any, Any]]:
         json_data = json.load(json_file)
         for record in json_data:
             yield (record[0], record[1])
-
-
-def preprocess_annotations(spans: List[Span]) -> Tuple[List[Span], List[Span]]:
-    """Preprocess text Spans and split them to ner spans and spancat spans
-    based on `NER_ENTITIES` list.
-
-    Args:
-        spans (List[Span]): List of text spans.
-
-    Returns:
-        Tuple[List[Span], List[Span]]: Tuple of the preprocessed spans.
-    """
-    ner_spans = [span for span in spans if span.label_ in NER_ENTITIES]
-    spancat_spans = [span for span in spans if span not in ner_spans]
-    return (ner_spans, spancat_spans)
 
 
 def convert_record(
@@ -73,9 +57,7 @@ def convert_record(
             warnings.warn(msg)
             return None
         spans.append(span)
-    if prob_type == "mixed":
-        doc.ents, doc.spans[spans_key] = preprocess_annotations(spans)
-    elif prob_type == "spancat":
+    if prob_type == "spancat":
         doc.spans[spans_key] = spans
     else:
         doc.ents = spans
