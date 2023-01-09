@@ -17,11 +17,9 @@ directories: ["assets",
               "config", 
               "corpus/spancat", 
               "corpus/ner", 
-              "corpus/mixed", 
               "training", 
               "metrics/spancat", 
               "metrics/ner", 
-              "metrics/mixed",
               ]
 
 
@@ -87,6 +85,17 @@ commands:
     help: "Train spaCy pipline"
     script:
       - "python -m spacy train ./config/${vars.prob_type}/${vars.config}.cfg -o ./training/${vars.prob_type}/${vars.config}"
+    deps:
+      - "corpus/${vars.prob_type}/train.spacy"
+      - "corpus/${vars.prob_type}/val.spacy"
+      - "./config/${vars.prob_type}/${vars.config}.cfg"
+    outputs:
+      - "training/${vars.prob_type}/${vars.config}/model-best"
+    
+  - name: resume-training
+    help: "Resume training spaCy ner pipline with the transformer architecture"
+    script:
+      - "python -m spacy train ./config/${vars.prob_type}/resume-training/${vars.config}.cfg --components.ner.source ./training/${vars.prob_type}/${vars.config}/model-best --components.transformer.source ./training/${vars.prob_type}/${vars.config}/model-best -o ./training/${vars.prob_type}/${vars.config} --gpu-id 0"
     deps:
       - "corpus/${vars.prob_type}/train.spacy"
       - "corpus/${vars.prob_type}/val.spacy"
