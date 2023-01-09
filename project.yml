@@ -19,7 +19,8 @@ directories: ["assets",
               "corpus/ner", 
               "training", 
               "metrics/spancat", 
-              "metrics/ner", 
+              "metrics/ner",
+              "packages"
               ]
 
 
@@ -112,6 +113,15 @@ commands:
       - "corpus/${vars.prob_type}/val.spacy"
     outputs:
       - "metrics/${vars.prob_type}/metrics-${vars.config}.json"
+
+  - name: package
+    help: "Package the trained model as a pip package"
+    script:
+      - "python -m spacy package training/${vars.prob_type}/${vars.config}/model-best packages --name ${vars.name} --version ${vars.version} --force"
+    deps:
+      - "training/${vars.prob_type}/${vars.config}/model-best"
+    outputs_no_cache:
+      - "packages/${vars.lang}_${vars.name}-${vars.version}/dist/${vars.lang}_${vars.name}-${vars.version}.tar.gz"
 
   - name: clean-preprocessed
     help: "Delete the preprocessed files"
