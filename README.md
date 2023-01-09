@@ -27,6 +27,7 @@ Commands are only re-run if their inputs have changed.
 | `evaluate` | Evaluate the trained model and export metrics |
 | `clean-preprocessed` | Delete the preprocessed files |
 | `clean` | Clean corpus and training data files |
+| `resume-training` | Resume training spaCy ner pipline with the transformer architecture |
 
 ### ⏭ Workflows
 
@@ -43,3 +44,88 @@ inputs have changed.
 
 ### ⏭ Train data summary
 ![Alt text](training_data_stats.PNG "Training data summary...")
+
+### ⏭ Trained model validation summary
+The pipline trained is **NER** and the config used for training is **transformer-distilbert**.
+
+### 📊 Results:
+
+##### 📝 Validation Summary:
+
+**Validation metrics**:
+
+- P: Precision
+- R: Recall
+- F: F1 Score
+
+| P | R | F |
+|:-----|:--------:|------:|
+| 0.97 | 0.96 | 0.97 |
+
+##### 📝 Entities Details:
+
+**PERSON**
+
+| P | R | F |
+|:-----|:--------:|------:|
+| 1 | 0.99 | 0.99 |
+
+**TITLE**
+
+| P | R | F |
+|:-----|:--------:|------:|
+| 0.97 | 0.97 | 0.97 |
+
+**ADDRESS**
+
+| P | R | F |
+|:-----|:--------:|------:|
+| 0.97 | 0.97 | 0.97 |
+
+**POSITION**
+
+| P | R | F |
+|:-----|:--------:|------:|
+| 0.96 | 0.93 | 0.95 |
+
+**ORG**
+
+| P | R | F |
+|:-----|:--------:|------:|
+| 0.96 | 0.95 | 0.95 |
+
+**DATE**
+
+| P | R | F |
+|:-----|:--------:|------:|
+| 0.98 | 0.98 | 0.98 |
+
+**DIPLOMA**
+
+| P | R | F |
+|:-----|:--------:|------:|
+| 0.97 | 0.95 | 0.96 |
+
+**INSTITUTE**
+
+| P | R | F |
+|:-----|:--------:|------:|
+| 0.96 | 0.96 | 0.96 |
+
+**LOC**
+
+| P | R | F |
+|:-----|:--------:|------:|
+| 0.97 | 0.98 | 0.98 |
+
+**Birth/Age**
+
+| P | R | F |
+|:-----|:--------:|------:|
+| 1 | 1 | 1 |
+
+**SKILL**
+
+| P | R | F |
+|:-----|:--------:|------:|
+| 0.97 | 0.96 | 0.96 |
